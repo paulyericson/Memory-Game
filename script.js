@@ -56,12 +56,53 @@ function createDivsForColors(colorArray) {
     gameContainer.append(newDiv);
   }
 }
+//----------------NEW CODE-------------------------------------
+
+let firstChoice = null;
+let secondChoice = null;
+let bothChosen = 0;
+let noAction = false;
 
 // TODO: Implement this function!
 function handleCardClick(event) {
-  // you can use event.target to see which element was clicked
-  console.log("you just clicked", event.target);
+if (noAction) return;
+if (event.target.classList.contains("flipped")) return;
+
+let currentChoice = event.target;
+currentChoice.style.backgroundColor = currentChoice.classList[0];
+
+if (!firstChoice || !secondChoice) {
+  currentChoice.classList.add("flipped");
+  firstChoice = firstChoice || currentChoice;
+  secondChoice = currentChoice === firstChoice ? null : currentChoice;
 }
 
+if (firstChoice && secondChoice) {
+  noAction = true;
+  let firstColor = firstChoice.className;
+  let secondColor = secondChoice.className;
+
+  if (firstColor === secondColor) {
+    bothChosen += 2;
+    firstChoice.removeEventListener("click", handleCardClick);
+    secondChoice.removeEventListener("click", handleCardClick);
+    firstChoice = null;
+    secondChoice = null;
+    noAction = false;
+} else {
+  setTimeout(function() {
+    firstChoice.style.backgroundColor = "";
+    secondChoice.style.backgroundColor = "";
+    firstChoice.classList.remove("flipped");
+    secondChoice.classList.remove("flipped");
+    firstChoice = null;
+    secondChoice = null;
+    noAction = false;
+  }, 1000)
+}
+}
+
+if (bothChosen === COLORS.length) alert("GAME OVER! YOU DID IT!!!");
+}
 // when the DOM loads
 createDivsForColors(shuffledColors);
